@@ -1,12 +1,19 @@
 import { CustomFilter, Hero, SearchBar, CarCard } from '@/components';
 import { fetchCars } from '@/utils';
 import Image from 'next/image';
+import { fuels, yearsOfProduction } from '@/constants';
 
+export default async function Home({ searchParams }) {
+    const allCars = await fetchCars({
+        manufacturer: searchParams.manufacturer || '',
+        year: searchParams.year || 2022,
+        fuel: searchParams.fuel || '',
+        limit: searchParams.limit || 10,
+        model: searchParams.model || ''
+    });
 
-export default async function Home() {
-const allCars = await fetchCars();
-
-const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 || !allCars
+    const isDataEmpty =
+        !Array.isArray(allCars) || allCars.length < 1 || !allCars;
 
     return (
         <main className='overflow-hidden'>
@@ -19,13 +26,13 @@ const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 || !allCars
                     <h1 className='text-4xl font-extrabold'>Car Catalog</h1>
                     <p>Explore cars you might like</p>
                 </div>
-                
+
                 <div className='home__filters'>
                     <SearchBar />
 
                     <div className='home__filter-container'>
-                        <CustomFilter title='fuel' />
-                        <CustomFilter title='year' />
+                        <CustomFilter title='fuel' options={fuels} />
+                        <CustomFilter title='year' options={yearsOfProduction}/>
                     </div>
                 </div>
 
@@ -36,15 +43,15 @@ const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 || !allCars
                                 <CarCard car={car} />
                             ))}
                         </div>
-
                     </section>
                 ) : (
                     <div className='home_error-container'>
-                        <h2 className='text-black text-xl font-bold'>Oops, no results</h2>
+                        <h2 className='text-black text-xl font-bold'>
+                            Oops, no results
+                        </h2>
                         <p>{allCars?.message}</p>
-                        </div>
+                    </div>
                 )}
-
             </div>
         </main>
     );
